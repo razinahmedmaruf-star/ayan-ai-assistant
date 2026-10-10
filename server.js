@@ -34,7 +34,7 @@ app.post("/api/chat", async (req, res) => {
 
     const ai = new GoogleGenAI({ apiKey: API_KEY });
     const result = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      model: process.env.GEMINI_MODEL || "gemini-3.8-flash",
       contents: message,
       config: {
         systemInstruction: "তুমি AYAN AI Assistant, একজন সহায়ক AI। ব্যবহারকারীর ভাষা অনুসারে উত্তর দাও, সাধারণত বাংলা। সহজ, ভদ্র ও পরিষ্কারভাবে ব্যাখ্যা করো।"
