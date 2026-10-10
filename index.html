@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>AYAN AI Assistant</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#19243a;--text:#eef2ff;--muted:#a8b3ca;--accent:#8b5cf6;--accent2:#06b6d4;--border:#2a3650}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;background:radial-gradient(ellipse at top,#17213a 0,#0b1020 55%);color:var(--text);min-height:100vh}
+.app{max-width:900px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:18px}
+header{display:flex;align-items:center;gap:12px;padding:12px 4px 18px;border-bottom:1px solid var(--border)}
+.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));font-size:24px;box-shadow:0 8px 28px #0005}
+h1{font-size:20px;margin:0}.subtitle{font-size:12px;color:var(--muted);margin-top:3px}
+.status{margin-left:auto;font-size:12px;color:#86efac;background:#14532d44;border:1px solid #166534;padding:6px 9px;border-radius:20px}
+main{flex:1;display:flex;flex-direction:column;padding:22px 0;gap:14px}
+.welcome{padding:20px;border:1px solid var(--border);border-radius:20px;background:linear-gradient(135deg,#17213a,#121a2d)}
+.welcome h2{margin:0 0 8px;font-size:22px}.welcome p{margin:0;color:var(--muted);line-height:1.65}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.chip{background:var(--panel2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:10px 12px;cursor:pointer;font:inherit;font-size:13px}
+.chip:hover{border-color:var(--accent)}
+#messages{display:flex;flex-direction:column;gap:13px}
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:100%}
+.avatar{flex:0 0 32px;height:32px;border-radius:11px;display:grid;place-items:center;background:#26334e;font-size:15px}
+.bubble{max-width:calc(100% - 42px);padding:12px 14px;border:1px solid var(--border);border-radius:4px 16px 16px 16px;background:var(--panel);line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.user{flex-direction:row-reverse}.msg.user .avatar{background:#5b21b6}.msg.user .bubble{background:#32215a;border-color:#59408d;border-radius:16px 4px 16px 16px}
+.composer{position:sticky;bottom:0;padding:12px 0 4px;background:linear-gradient(transparent,#0b1020 18%)}
+.inputrow{display:flex;gap:8px;padding:8px;border:1px solid var(--border);background:#111a2c;border-radius:17px;box-shadow:0 10px 35px #0004}
+textarea{flex:1;resize:none;min-height:44px;max-height:140px;border:0;outline:0;background:transparent;color:var(--text);font:inherit;padding:10px}
+.send{width:46px;min-width:46px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--accent),#6d28d9);color:white;font-size:20px;cursor:pointer}
+.send:disabled{opacity:.5;cursor:wait}
+.hint{font-size:11px;color:var(--muted);text-align:center;margin:8px 0}
+footer{font-size:11px;color:#8390a9;text-align:center;padding:10px}
+@media(max-width:520px){.app{padding:12px}.welcome h2{font-size:19px}.status{font-size:10px}.bubble{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">✦</div>
+  <div><h1>AYAN AI Assistant</h1><div class="subtitle">তোমার বাংলা AI সহকারী</div></div>
+  <div class="status">● প্রস্তুত</div>
+</header>
+<main>
+  <section class="welcome" id="welcome">
+    <h2>আসসালামু আলাইকুম! 👋</h2>
+    <p>আমি AYAN AI Assistant। বাংলা বা ইংরেজিতে প্রশ্ন করো, আমি উত্তর দেওয়ার চেষ্টা করব।</p>
+    <div class="chips">
+      <button class="chip" data-prompt="আমাকে একটি সুন্দর ফেসবুক পোস্ট লিখে দাও।">✍️ ফেসবুক পোস্ট</button>
+      <button class="chip" data-prompt="একটি ছোট ব্যবসার জন্য ৫টি নতুন আইডিয়া দাও।">💡 ব্যবসার আইডিয়া</button>
+      <button class="chip" data-prompt="HTML, CSS ও JavaScript সহজভাবে শেখার পরিকল্পনা দাও।">💻 কোড শেখা</button>
+      <button class="chip" data-prompt="আজকের জন্য একটি সহজ কাজের তালিকা তৈরি করো।">✅ কাজের তালিকা</button>
+    </div>
+  </section>
+  <section id="messages" aria-live="polite"></section>
+</main>
+<div class="composer">
+  <div class="inputrow">
+    <textarea id="prompt" rows="1" placeholder="এখানে প্রশ্ন লেখো..." aria-label="তোমার প্রশ্ন"></textarea>
+    <button class="send" id="send" title="পাঠাও" aria-label="পাঠাও">➤</button>
+  </div>
+  <div class="hint">Enter = পাঠাও · Shift + Enter = নতুন লাইন</div>
+</div>
+<footer>AYAN AI Assistant · Gemini AI সংযুক্ত সংস্করণ</footer>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const messages = $('#messages'), promptBox = $('#prompt'), sendBtn = $('#send');
+
+function addMessage(text, who='assistant') {
+  const row = document.createElement('div');
+  row.className = 'msg ' + (who === 'user' ? 'user' : 'assistant');
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = who === 'user' ? '🙂' : '✦';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.append(avatar, bubble);
+  messages.appendChild(row);
+  row.scrollIntoView({behavior:'smooth', block:'end'});
+  return bubble;
+}
+async function sendMessage() {
+  const q = promptBox.value.trim();
+  if (!q || sendBtn.disabled) return;
+  $('#welcome').style.display = 'none';
+  addMessage(q, 'user');
+  promptBox.value = '';
+  promptBox.style.height = 'auto';
+  sendBtn.disabled = true;
+  const replyBubble = addMessage('উত্তর তৈরি হচ্ছে…');
+  try {
+    const response = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:q})
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'সার্ভার থেকে উত্তর পাওয়া যায়নি।');
+    if (!data.reply) throw new Error('AI-এর উত্তর পাওয়া যায়নি।');
+    replyBubble.textContent = data.reply;
+  } catch (err) {
+    replyBubble.textContent = 'AI সংযোগে সমস্যা হয়েছে।\\n' + err.message + '\\n\\nসার্ভার চালু আছে এবং API key ঠিকভাবে সেট করা আছে কি না পরীক্ষা করো।';
+  } finally {
+    sendBtn.disabled = false;
+    promptBox.focus();
+  }
+}
+sendBtn.addEventListener('click', sendMessage);
+promptBox.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+promptBox.addEventListener('input', () => {
+  promptBox.style.height = 'auto';
+  promptBox.style.height = Math.min(promptBox.scrollHeight, 140) + 'px';
+});
+document.querySelectorAll('[data-prompt]').forEach(btn => btn.addEventListener('click', () => {
+  promptBox.value = btn.dataset.prompt;
+  promptBox.focus();
+}));
+</script>
+</body>
+</html>
